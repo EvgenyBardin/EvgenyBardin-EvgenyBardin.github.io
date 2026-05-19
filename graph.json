@@ -1,1 +1,1 @@
-{"homeAlias":"/","nodes":{"/Анализ текущих настроек SAP/":{"id":0,"title":"Анализ текущих настроек SAP","url":"/Анализ текущих настроек SAP/","group":"none","home":false,"outBound":[],"neighbors":[],"backLinks":[],"hide":false,"size":0}},"links":[]}
+{"homeAlias":"/","nodes":{"/":{"id":0,"title":"Анализ текущих настроек SAP","url":"/","group":"none","home":true,"outBound":[],"neighbors":[],"backLinks":[],"hide":false,"size":0}},"links":[]}
