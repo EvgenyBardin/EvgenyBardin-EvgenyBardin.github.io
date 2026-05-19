@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Архитектура Мультикуба M03.01 Импорт Заказов</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<h2 id="history" tabindex="-1">History</h2>
+<p><strong>User</strong><br>
+Посмотри файл excel. В нем представлена настройка мультикуба M03.01 Импорт факт заказов в ПО Optimacros (Оптимакрос). В строках файла кубы (измерения) этого мультикуба. В поле Formula содержатся формулы для расчета/формирования значений куба (измерения). В поле Referenced By указатель/формула где это значение потом используется. Есть поля без формул. Я предполагаю, что они заполняются по скрипту загрузки данных из sql базы данных (файл word). Можешь выстроить архитектуру из этих данных, откуда данные попадают в мультикуб и где потом используются? Можешь представить архитектуру в виде описания и в виде схемы?</p>
+<p><strong>Claude Sonnet 4.5</strong></p>
+<h1 id="arhitektura-multikuba-m03-01-import-fakt-zakazov" tabindex="-1">Архитектура мультикуба M03.01 Импорт факт заказов</h1>
+<h2 id="opisanie-arhitektury" tabindex="-1">Описание архитектуры</h2>
+<h3 id="1-strong-istochnik-dannyh-sql-database-strong" tabindex="-1">1. <strong>Источник данных (SQL Database)</strong></h3>
+<p>Данные загружаются из MS SQL базы данных из таблицы <code>CF_Import_By_Orders</code> с фильтрацией по периодам, заданным в мультикубе <code>М94.03 Фильтр периодов загрузки Заказов</code>.</p>
+<p><strong>Загружаемые поля из SQL:</strong></p>
+<ul>
+<li><code>PERIOD</code> → Период</li>
+<li><code>AUFNR</code> → Заказ</li>
+<li><code>KSTAR</code> → Вид затрат</li>
+<li><code>PostDate</code> → Дата проводки</li>
+<li><code>Quantity</code> → Общее ВведеннКолич</li>
+<li><code>UoM</code> → ВведЕдиницИзмерен</li>
+<li><code>MatNum</code> → Материал</li>
+<li><code>MatKText</code> → Краткий текст материала</li>
+<li><code>DocComment</code> → Название</li>
+<li><code>Description</code> → Описание корреспондирующего счета</li>
+<li><code>RepSum</code> → Знач/ВлтОтч</li>
+<li><code>RepCurr</code> → Валюта отчета</li>
+<li><code>LinkDocNum</code> → № СсылочнДокумента</li>
+<li><code>_User</code> → Имя пользователя</li>
+<li><code>DocData</code> → Дата документа</li>
+<li><code>BELNR</code> → № документа</li>
+<li><code>ObjSum</code> → Сумма/ВлтОб</li>
+<li><code>ObjCurr</code> → Валюта объекта</li>
+<li><code>HeadText</code> → Текст заголовка документа</li>
+<li><code>DocDataEntry</code> → Дата ввода документа</li>
+<li><code>DocTime</code> → Время ввода документа</li>
+</ul>
+<h3 id="2-strong-obrabotka-dannyh-v-multikube-m03-01-strong" tabindex="-1">2. <strong>Обработка данных в мультикубе M03.01</strong></h3>
+<h4 id="strong-pryamaya-zagruzka-bez-formul-strong" tabindex="-1"><strong>Прямая загрузка (без формул):</strong></h4>
+<p>Поля заполняются напрямую из SQL через скрипт импорта.</p>
+<h4 id="strong-raschetnye-polya-s-formulami-strong" tabindex="-1"><strong>Расчетные поля (с формулами):</strong></h4>
+<p><strong>A. Маппинг и преобразование данных:</strong></p>
+<ul>
+<li><strong>Item.Внутренний заказ</strong> - маппинг из справочника <code>L01.08 Внутренние заказы</code> по полю &quot;Заказ&quot;</li>
+<li><strong>Item.Вид затрат</strong> - маппинг из справочника <code>L01.07 Виды затрат</code> по полю &quot;Вид затрат&quot;</li>
+<li><strong>Item.МВЗ</strong> - получение через маппинг <code>M97.02 Маппинг Заказ - МВЗ</code></li>
+<li><strong>Item.L04.02 1D Ответственные-Внутренние заказы</strong> - связь ответственных лиц с заказами</li>
+</ul>
+<p><strong>B. Контроль качества данных:</strong></p>
+<ul>
+<li><strong>Check Внутренний заказ</strong> - проверка наличия заказа в справочнике (если есть &quot;Заказ&quot;, но нет &quot;Item.Внутренний заказ&quot; → ошибка)</li>
+<li><strong>Check Вид затрат</strong> - проверка наличия вида затрат в справочнике</li>
+<li><strong>не проставлен ответственный</strong> - проверка наличия ответственного лица</li>
+<li><strong>Check_Кол-во ошибок</strong> - суммарное количество ошибок</li>
+<li><strong>Check_Описание ошибки</strong> - текстовое описание найденных ошибок</li>
+</ul>
+<p><strong>C. Фильтры и агрегация:</strong></p>
+<ul>
+<li><strong>Есть данные</strong> - проверка наличия данных по периоду</li>
+<li><strong>NumCount</strong> - подсчет количества записей с данными</li>
+<li><strong>Есть ошибка</strong> - флаг наличия ошибок в данных</li>
+</ul>
+<h3 id="3-strong-ispolzovanie-dannyh-referenced-by-strong" tabindex="-1">3. <strong>Использование данных (Referenced By)</strong></h3>
+<p>Данные из M03.01 используются в:</p>
+<ul>
+<li><strong>M01.04 Ввод данных (по заказам)</strong> - поле 'Ввод без факта' использует данные из M03.01</li>
+<li><strong>M99.01 MaxNumImport</strong> - поле 'MsxNumOM Заказ' для отслеживания максимального номера импорта</li>
+<li><strong>М11.02 1D Ответственные-Внутренние заказы</strong> - использует связку ответственных и заказов</li>
+</ul>
+<h3 id="4-strong-vspomogatelnye-komponenty-strong" tabindex="-1">4. <strong>Вспомогательные компоненты:</strong></h3>
+<ul>
+<li><strong>М94.03 Фильтр периодов загрузки Заказов</strong> - управляет периодами для загрузки</li>
+<li><strong>M98.01 Настройки скриптов</strong> - хранит параметры подключения к SQL</li>
+<li><strong>M99.02 Script logging</strong> - логирование выполнения скрипта</li>
+<li><strong>M97.02 Маппинг Заказ - МВЗ</strong> - справочник соответствия заказов и МВЗ</li>
+</ul>
+<hr>
+<h2 id="shema-arhitektury" tabindex="-1">Схема архитектуры</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    ИСТОЧНИКИ И НАСТРОЙКИ                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────────┐      ┌────────────────────────────┐      │
+│  │   MS SQL DB      │      │ М94.03 Фильтр периодов     │      │
+│  │ CF_Import_By_    │◄─────│ загрузки Заказов           │      │
+│  │ Orders           │      │ (управление периодами)     │      │
+│  └────────┬─────────┘      └────────────────────────────┘      │
+│           │                                                     │
+│           │                ┌────────────────────────────┐      │
+│           │                │ M98.01 Настройки скриптов  │      │
+│           │                │ (SQL параметры подключения)│      │
+│           │                └────────────────────────────┘      │
+└───────────┼─────────────────────────────────────────────────────┘
+            │
+            │ ИМПОРТ (JavaScript скрипт)
+            ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              МУЛЬТИКУБ M03.01 Импорт факт заказов               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌────────────────────────────────────────────────────────┐    │
+│  │ ПРЯМАЯ ЗАГРУЗКА ИЗ SQL (без формул):                   │    │
+│  │ • Период, Заказ, Вид затрат, Дата проводки             │    │
+│  │ • Материал, Суммы, Валюты, Документы и т.д.            │    │
+│  └────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  ┌────────────────────────────────────────────────────────┐    │
+│  │ МАППИНГ И ПРЕОБРАЗОВАНИЕ (с формулами):                │    │
+│  │                                                         │    │
+│  │  ┌──────────────────────────────────────────┐          │    │
+│  │  │ Item.Внутренний заказ ◄─────────────────┼──────┐   │    │
+│  │  │ (SELECT из L01.08)                       │      │   │    │
+│  │  └──────────────────────────────────────────┘      │   │    │
+│  │                                                     │   │    │
+│  │  ┌──────────────────────────────────────────┐      │   │    │
+│  │  │ Item.Вид затрат ◄───────────────────────┼──┐   │   │    │
+│  │  │ (SELECT из L01.07)                       │  │   │   │    │
+│  │  └──────────────────────────────────────────┘  │   │   │    │
+│  │                                                 │   │   │    │
+│  │  ┌──────────────────────────────────────────┐  │   │   │    │
+│  │  │ Item.МВЗ ◄─ M97.02 Маппинг Заказ-МВЗ    │  │   │   │    │
+│  │  └──────────────────────────────────────────┘  │   │   │    │
+│  │                                                 │   │   │    │
+│  │  ┌──────────────────────────────────────────┐  │   │   │    │
+│  │  │ Item.L04.02 Ответственные               │  │   │   │    │
+│  │  └──────────────────────────────────────────┘  │   │   │    │
+│  └─────────────────────────────────────────────────┼───┼───┘    │
+│                                                     │   │        │
+│  ┌─────────────────────────────────────────────────┼───┼───┐    │
+│  │ КОНТРОЛЬ КАЧЕСТВА:                              │   │   │    │
+│  │                                                  ▼   ▼   │    │
+│  │  • Check Внутренний заказ ──────────► Проверка маппинга│    │
+│  │  • Check Вид затрат ─────────────────► Проверка маппинга│   │
+│  │  • не проставлен ответственный                         │    │
+│  │  • Check_Кол-во ошибок (сумма всех проверок)           │    │
+│  │  • Check_Описание ошибки (текстовое описание)          │    │
+│  │  • Есть ошибка (флаг)                                  │    │
+│  └────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  ┌────────────────────────────────────────────────────────┐    │
+│  │ ФИЛЬТРЫ И АГРЕГАЦИЯ:                                   │    │
+│  │  • Есть данные (BOOLEAN по периоду)                    │    │
+│  │  • NumCount (подсчет записей)                          │    │
+│  └────────────────────────────────────────────────────────┘    │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+                            │ ИСПОЛЬЗОВАНИЕ ДАННЫХ
+                            ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  ЦЕЛЕВЫЕ МУЛЬТИКУБЫ И ОТЧЕТЫ                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────┐      │
+│  │ M01.04 Ввод данных (по заказам)                      │      │
+│  │ └─► Поле: 'Ввод без факта'                           │      │
+│  └──────────────────────────────────────────────────────┘      │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────┐      │
+│  │ M99.01 MaxNumImport                                  │      │
+│  │ └─► Поле: 'MsxNumOM Заказ'                           │      │
+│  │     (отслеживание номера импорта)                    │      │
+│  └──────────────────────────────────────────────────────┘      │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────┐      │
+│  │ М11.02 1D Ответственные-Внутренние заказы            │      │
+│  │ └─► Связка ответственных с заказами                  │      │
+│  └──────────────────────────────────────────────────────┘      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    ВСПОМОГАТЕЛЬНЫЕ СИСТЕМЫ                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  • M99.02 Script logging (логирование выполнения скрипта)       │
+│  • L01.08 Внутренние заказы (справочник)                        │
+│  • L01.07 Виды затрат (справочник)                              │
+│  • L01.09 Ответственные (справочник)                            │
+│  • M97.02 Маппинг Заказ - МВЗ (справочник соответствия)         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h2 id="klyuchevye-osobennosti-arhitektury" tabindex="-1">Ключевые особенности архитектуры:</h2>
+<ol>
+<li>
+<p><strong>Трехуровневая структура:</strong></p>
+<ul>
+<li><strong>Уровень 1:</strong> Источник (SQL DB) + Настройки</li>
+<li><strong>Уровень 2:</strong> Обработка и валидация (M03.01)</li>
+<li><strong>Уровень 3:</strong> Использование в аналитических кубах</li>
+</ul>
+</li>
+<li>
+<p><strong>Контроль качества данных</strong> встроен непосредственно в мультикуб через систему проверок (Check-поля)</p>
+</li>
+<li>
+<p><strong>Маппинг данных</strong> происходит через справочники и специализированные кубы маппинга</p>
+</li>
+<li>
+<p><strong>Логирование</strong> всех операций в отдельный мультикуб для аудита</p>
+</li>
+<li>
+<p><strong>Фильтрация периодов</strong> управляется отдельным мультикубом, что позволяет гибко настраивать загрузку данных</p>
+</li>
+</ol>
+<p><strong>User</strong><br>
+Некачественно провел анализ. В поле Reference By для куба Item.Внутренний заказ содержится ссылка с какими кубами других мультикубов связан данный куб. Почему ты не указал это в архитектуре? Создай новую версию архитектуры уже с учетом этой информации</p>
+<p><strong>Claude Sonnet 4.5</strong><br>
+Вы абсолютно правы, я упустил важную информацию из поля Referenced By. Проведу более тщательный анализ.</p>
+<h1 id="arhitektura-multikuba-m03-01-import-fakt-zakazov-polna-ya-versi-ya" tabindex="-1">Архитектура мультикуба M03.01 Импорт факт заказов (ПОЛНАЯ ВЕРСИЯ)</h1>
+<h2 id="opisanie-arhitektury-1" tabindex="-1">Описание архитектуры</h2>
+<h3 id="1-strong-istochnik-dannyh-sql-database-strong-1" tabindex="-1">1. <strong>Источник данных (SQL Database)</strong></h3>
+<p>Данные загружаются из MS SQL базы данных из таблицы <code>CF_Import_By_Orders</code> с фильтрацией по периодам, заданным в мультикубе <code>М94.03 Фильтр периодов загрузки Заказов</code>.</p>
+<p><strong>Загружаемые поля из SQL:</strong></p>
+<ul>
+<li><code>PERIOD</code> → Период</li>
+<li><code>AUFNR</code> → Заказ</li>
+<li><code>KSTAR</code> → Вид затрат</li>
+<li><code>PostDate</code> → Дата проводки</li>
+<li><code>Quantity</code> → Общее ВведеннКолич</li>
+<li><code>UoM</code> → ВведЕдиницИзмерен</li>
+<li><code>MatNum</code> → Материал</li>
+<li><code>MatKText</code> → Краткий текст материала</li>
+<li><code>DocComment</code> → Название</li>
+<li><code>Description</code> → Описание корреспондирующего счета</li>
+<li><code>RepSum</code> → Знач/ВлтОтч</li>
+<li><code>RepCurr</code> → Валюта отчета</li>
+<li><code>LinkDocNum</code> → № СсылочнДокумента</li>
+<li><code>_User</code> → Имя пользователя</li>
+<li><code>DocData</code> → Дата документа</li>
+<li><code>BELNR</code> → № документа</li>
+<li><code>ObjSum</code> → Сумма/ВлтОб</li>
+<li><code>ObjCurr</code> → Валюта объекта</li>
+<li><code>HeadText</code> → Текст заголовка документа</li>
+<li><code>DocDataEntry</code> → Дата ввода документа</li>
+<li><code>DocTime</code> → Время ввода документа</li>
+</ul>
+<h3 id="2-strong-obrabotka-dannyh-v-multikube-m03-01-strong-1" tabindex="-1">2. <strong>Обработка данных в мультикубе M03.01</strong></h3>
+<h4 id="strong-pryamaya-zagruzka-bez-formul-strong-1" tabindex="-1"><strong>Прямая загрузка (без формул):</strong></h4>
+<p>Поля заполняются напрямую из SQL через скрипт импорта.</p>
+<h4 id="strong-raschetnye-polya-s-formulami-strong-1" tabindex="-1"><strong>Расчетные поля (с формулами):</strong></h4>
+<p><strong>A. Маппинг и преобразование данных:</strong></p>
+<ol>
+<li>
+<p><strong>Item.Внутренний заказ</strong> - маппинг из справочника <code>L01.08 Внутренние заказы</code> по полю &quot;Заказ&quot;</p>
+<ul>
+<li><strong>Referenced By (используется в):</strong>
+<ul>
+<li><code>'Item.МВЗ'</code> - для определения МВЗ</li>
+<li><code>'Item.L04.02 1D Ответственные-Внутренние заказы'</code> - для связи с ответственными</li>
+<li><code>'Item.Вид контракта'</code> - для определения вида контракта</li>
+<li><code>'Item.Вид работ'</code> - для определения вида работ</li>
+<li><code>'Item.Статус заказа'</code> - для определения статуса</li>
+<li><code>'Item.Группа заказов'</code> - для группировки</li>
+<li><code>'Item.Проект'</code> - для связи с проектами</li>
+<li><code>'Item.Тип заказа'</code> - для определения типа</li>
+<li><code>'Item.Объект учета затрат'</code> - для учета затрат</li>
+<li><code>'Item.Контракт'</code> - для связи с контрактами</li>
+<li><code>'Название объекта'</code> - для получения описания</li>
+<li><code>'Check Внутренний заказ'</code> - для валидации</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Вид затрат</strong> - маппинг из справочника <code>L01.07 Виды затрат</code> по полю &quot;Вид затрат&quot;</p>
+<ul>
+<li><strong>Referenced By (используется в):</strong>
+<ul>
+<li><code>'Item.Вид затрат (Сводная)'</code> - для агрегации</li>
+<li><code>'Обозначение В/Затрат'</code> - для получения обозначения</li>
+<li><code>'Check Вид затрат'</code> - для валидации</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Item.МВЗ</strong> - получение через маппинг <code>M97.02 Маппинг Заказ - МВЗ</code></p>
+<ul>
+<li>Формула: <code>SELECT('M97.02 Маппинг Заказ - МВЗ'.'МВЗ', 'Item.Внутренний заказ', 'L01.04 МВЗ'.'Все МВЗ')</code></li>
+<li><strong>Referenced By (используется в):</strong>
+<ul>
+<li><code>'Item.Вид деятельности'</code> - для определения вида деятельности</li>
+<li><code>'Item.Подразделение'</code> - для определения подразделения</li>
+<li><code>'Item.Филиал'</code> - для определения филиала</li>
+<li><code>'Item.Регион'</code> - для определения региона</li>
+<li><code>'Item.ЦФО'</code> - для определения ЦФО</li>
+<li><code>'Item.Направление'</code> - для определения направления</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Item.L04.02 1D Ответственные-Внутренние заказы</strong></p>
+<ul>
+<li>Формула: <code>SELECT('M11.02 1D Ответственные-Внутренние заказы'.'Ответственный', 'Item.Внутренний заказ', 'L01.09 Ответственные'.'Все ответственные')</code></li>
+<li><strong>Referenced By (используется в):</strong>
+<ul>
+<li><code>'не проставлен ответственный'</code> - для проверки наличия</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>B. Иерархические атрибуты (получаемые через Item.Внутренний заказ):</strong></p>
+<ol start="5">
+<li>
+<p><strong>Item.Вид контракта</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Вид контракта', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Вид работ</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Вид работ', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Статус заказа</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Статус заказа', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Группа заказов</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Группа заказов', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Проект</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Проект', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Тип заказа</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Тип заказа', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Объект учета затрат</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Объект учета затрат', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Контракт</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Контракт', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>C. Иерархические атрибуты (получаемые через Item.МВЗ):</strong></p>
+<ol start="13">
+<li>
+<p><strong>Item.Вид деятельности</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.04 МВЗ'.'Вид деятельности', 'Item.МВЗ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Подразделение</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.04 МВЗ'.'Подразделение', 'Item.МВЗ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Филиал</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.04 МВЗ'.'Филиал', 'Item.МВЗ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Регион</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.04 МВЗ'.'Регион', 'Item.МВЗ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.ЦФО</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.04 МВЗ'.'ЦФО', 'Item.МВЗ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Item.Направление</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.04 МВЗ'.'Направление', 'Item.МВЗ')</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>D. Агрегация видов затрат:</strong></p>
+<ol start="19">
+<li><strong>Item.Вид затрат (Сводная)</strong>
+<ul>
+<li>Формула: <code>PROPERTY('L01.07 Виды затрат'.'Вид затрат (Сводная)', 'Item.Вид затрат')</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>E. Описательные поля:</strong></p>
+<ol start="20">
+<li>
+<p><strong>Название объекта</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.08 Внутренние заказы'.'Описание', 'Item.Внутренний заказ')</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Обозначение В/Затрат</strong></p>
+<ul>
+<li>Формула: <code>PROPERTY('L01.03 Вид затрат'.'Обозначение В/Затрат', 'Item.Вид затрат')</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>F. Контроль качества данных:</strong></p>
+<ol start="22">
+<li>
+<p><strong>Check Внутренний заказ</strong></p>
+<ul>
+<li>Формула: <code>IF BOOLEAN('Заказ') AND NOT BOOLEAN('Item.Внутренний заказ') THEN 1 ELSE 0</code></li>
+<li><strong>Referenced By:</strong> <code>'Check_Кол-во ошибок'</code>, <code>'Check_Описание ошибки'</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Check Вид затрат</strong></p>
+<ul>
+<li>Формула: <code>IF BOOLEAN('Вид затрат') AND NOT BOOLEAN('Item.Вид затрат') THEN 1 ELSE 0</code></li>
+<li><strong>Referenced By:</strong> <code>'Check_Кол-во ошибок'</code>, <code>'Check_Описание ошибки'</code></li>
+</ul>
+</li>
+<li>
+<p><strong>не проставлен ответственный</strong></p>
+<ul>
+<li>Формула: <code>IF BOOLEAN('Item.Внутренний заказ') AND NOT BOOLEAN('Item.L04.02 1D Ответственные-Внутренние заказы') THEN 1 ELSE 0</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Check_Кол-во ошибок</strong></p>
+<ul>
+<li>Формула: <code>'Check Внутренний заказ' + 'Check Вид затрат'</code></li>
+<li><strong>Referenced By:</strong> <code>'Есть ошибка'</code>, <code>'M99.06 Ошибки свод'.'Ошибки: Импорт факт заказы'</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Check_Описание ошибки</strong></p>
+<ul>
+<li>Формула: <code>(IF BOOLEAN('Check Внутренний заказ') THEN &quot;|Ошибка внутреннего заказа&quot; ELSE &quot;&quot;) &amp; (IF BOOLEAN('Check Вид затрат') THEN &quot;| Ошибка вида затрат&quot; ELSE &quot;&quot;)</code></li>
+<li><strong>Referenced By:</strong> <code>'M99.06 Ошибки свод'.'Ошибки: Импорт факт заказы'</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Есть ошибка</strong></p>
+<ul>
+<li>Формула: <code>IF 'Check_Кол-во ошибок' &gt; 0 THEN TRUE ELSE FALSE</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>G. Фильтры и агрегация:</strong></p>
+<ol start="28">
+<li>
+<p><strong>Есть данные</strong></p>
+<ul>
+<li>Формула: <code>IF BOOLEAN('Период') THEN TRUE ELSE FALSE</code></li>
+</ul>
+</li>
+<li>
+<p><strong>NumCount</strong></p>
+<ul>
+<li>Формула: <code>IF BOOLEAN('Есть данные') THEN 1 ELSE 0</code></li>
+</ul>
+</li>
+<li>
+<p><strong>sNum ActImportOrders</strong></p>
+<ul>
+<li>Нумерация записей по периодам</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-strong-ispolzovanie-dannyh-referenced-by-iz-multikuba-m03-01-strong" tabindex="-1">3. <strong>Использование данных (Referenced By из мультикуба M03.01)</strong></h3>
+<h4 id="strong-pryamoe-ispolzovanie-v-drugih-multikubah-strong" tabindex="-1"><strong>Прямое использование в других мультикубах:</strong></h4>
+<ol>
+<li>
+<p><strong>M01.04 Ввод данных (по заказам)</strong></p>
+<ul>
+<li>Поле: <code>'Ввод без факта'</code></li>
+</ul>
+</li>
+<li>
+<p><strong>M99.01 MaxNumImport</strong></p>
+<ul>
+<li>Поле: <code>'MsxNumOM Заказ'</code> - отслеживание максимального номера импорта</li>
+</ul>
+</li>
+<li>
+<p><strong>М11.02 1D Ответственные-Внутренние заказы</strong></p>
+<ul>
+<li>Используется для получения связки ответственных с заказами</li>
+</ul>
+</li>
+<li>
+<p><strong>M99.06 Ошибки свод</strong></p>
+<ul>
+<li>Поле: <code>'Ошибки: Импорт факт заказы'</code> - агрегация ошибок импорта</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-strong-vspomogatelnye-komponenty-spravochniki-i-nastrojki-strong" tabindex="-1">4. <strong>Вспомогательные компоненты (справочники и настройки):</strong></h3>
+<h4 id="strong-spravochniki-lists-strong" tabindex="-1"><strong>Справочники (Lists):</strong></h4>
+<ul>
+<li><strong>L01.08 Внутренние заказы</strong> - основной справочник заказов с атрибутами</li>
+<li><strong>L01.07 Виды затрат</strong> - справочник видов затрат</li>
+<li><strong>L01.04 МВЗ</strong> - справочник мест возникновения затрат</li>
+<li><strong>L01.09 Ответственные</strong> - справочник ответственных лиц</li>
+<li><strong>L01.03 Вид затрат</strong> - дополнительный справочник видов затрат</li>
+</ul>
+<h4 id="strong-multikuby-mappinga-strong" tabindex="-1"><strong>Мультикубы маппинга:</strong></h4>
+<ul>
+<li><strong>M97.02 Маппинг Заказ - МВЗ</strong> - связь заказов с МВЗ</li>
+<li><strong>M11.02 1D Ответственные-Внутренние заказы</strong> - связь ответственных с заказами</li>
+</ul>
+<h4 id="strong-upravlyayushhie-multikuby-strong" tabindex="-1"><strong>Управляющие мультикубы:</strong></h4>
+<ul>
+<li><strong>М94.03 Фильтр периодов загрузки Заказов</strong> - управление периодами загрузки</li>
+<li><strong>M98.01 Настройки скриптов</strong> - параметры подключения к SQL</li>
+</ul>
+<h4 id="strong-sistemnye-multikuby-strong" tabindex="-1"><strong>Системные мультикубы:</strong></h4>
+<ul>
+<li><strong>M99.02 Script logging</strong> - логирование выполнения скриптов</li>
+<li><strong>M99.06 Ошибки свод</strong> - сводный отчет по ошибкам</li>
+</ul>
+<hr>
+<h2 id="arhitektura-importa-fakt-zakazov-chitabelnaya-versiya" tabindex="-1"># Архитектура импорта «Факт заказов» (читабельная версия)</h2>
+<h2 id="1-naznachenie" tabindex="-1">1) Назначение</h2>
+<p>Процесс загружает фактические данные по заказам из <strong>MS SQL</strong> в центральный мультикуб <strong>M03.01</strong>, обогащает их справочниками/маппингами, выполняет проверки качества и передаёт результат в целевые мультикубы для <strong>план/факт</strong>, <strong>контроля импорта</strong> и <strong>сводной витрины ошибок</strong>.</p>
+<hr>
+<h2 id="2-komponenty-chto-uchastvuet" tabindex="-1">2) Компоненты (что участвует)</h2>
+<h3 id="2-1-istochniki-i-nastrojki" tabindex="-1">2.1 Источники и настройки</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Тип</th>
+<th>Код/имя</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQL-источник</td>
+<td><strong>MS SQL / CF_Import_By_Orders</strong></td>
+<td>Таблица-источник факта заказов</td>
+</tr>
+<tr>
+<td>Управление периодами</td>
+<td><strong>M94.03 Фильтр периодов загрузки Заказов</strong></td>
+<td>Задает список периодов для WHERE PERIOD IN (…)</td>
+</tr>
+<tr>
+<td>Настройки подключения</td>
+<td><strong>M98.01 Настройки скриптов</strong></td>
+<td>SQL Host/Port/User/Password/DB + параметры ядра/логгера</td>
+</tr>
+<tr>
+<td>Логирование</td>
+<td><strong>M99.02 Script logging</strong></td>
+<td>DEBUG-лог выполнения скрипта импорта</td>
+</tr>
+<tr>
+<td>Скрипт</td>
+<td><strong>JavaScript (Импорт факт заказов)</strong></td>
+<td>Extract/Load из SQL в M03.01</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="3-czentralnyj-uzel-strong-m03-01-import-fakt-zakazov-strong" tabindex="-1">3) Центральный узел: <strong>M03.01 Импорт факт заказов</strong></h2>
+<h3 id="3-1-struktura-m03-01-po-blokam-logika-ot-syrya-k-obogashheniyu" tabindex="-1">3.1 Структура M03.01 по блокам (логика «от сырья к обогащению»)</h3>
+<h4 id="blok-1-pryamaya-zagruzka-iz-sql-bez-formul" tabindex="-1">Блок 1 — Прямая загрузка из SQL (без формул)</h4>
+<p><strong>Источник:</strong> CF_Import_By_Orders<br>
+<strong>Сущность:</strong> «как в SQL» (сырые поля).<br>
+Примеры полей: Период, Заказ, Вид затрат, Дата проводки, Материал, Валюты/суммы, № документа, пользователь, даты/время ввода и т.п. (≈21 поле).</p>
+<hr>
+<h4 id="blok-2-mapping-osnovnyh-sushhnostej-klyuchevye-item" tabindex="-1">Блок 2 — Маппинг основных сущностей (ключевые “Item.*”)</h4>
+<p>Цель: превратить текст/коды из SQL в элементы справочников/кубов.</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Выходное поле M03.01</th>
+<th>Как вычисляется</th>
+<th>Откуда берётся</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Item.Внутренний заказ</strong></td>
+<td><code>FINDBYNAME('L01.08 Внутренние заказы','Заказ')</code></td>
+<td>справочник <strong>L01.08</strong></td>
+</tr>
+<tr>
+<td><strong>Item.Вид затрат</strong></td>
+<td><code>FINDBYNAME('L01.07 Виды затрат','Вид затрат')</code></td>
+<td>справочник <strong>L01.07</strong></td>
+</tr>
+<tr>
+<td><strong>Item.МВЗ</strong></td>
+<td><code>SELECT('M97.02 Маппинг Заказ - МВЗ','Item.Внутренний заказ')</code></td>
+<td>маппинг-куб <strong>M97.02</strong></td>
+</tr>
+<tr>
+<td><strong>Item.L04.02 Ответственные-Внутренние заказы</strong></td>
+<td><code>SELECT('M11.02 1D Ответственные-Внутренние заказы', …)</code></td>
+<td>маппинг-куб <strong>M11.02</strong></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>Критично:</strong> <code>Item.Внутренний заказ</code> — корневой ключ. От него зависит большая часть обогащения.</p>
+</blockquote>
+<hr>
+<h4 id="blok-3-atributy-zakaza-cherez-svojstva-strong-l01-08-strong" tabindex="-1">Блок 3 — Атрибуты заказа (через свойства <strong>L01.08</strong>)</h4>
+<p>Все атрибуты подтягиваются через:<br>
+<code>PROPERTY('L01.08'.'&lt;свойство&gt;', 'Item.Внутренний заказ')</code></p>
+<p><strong>Выходные атрибуты (примерно 9):</strong></p>
+<ul>
+<li>Вид контракта, Вид работ, Статус заказа, Группа заказов, Проект, Тип заказа, Объект учета затрат, Контракт, Название объекта (Описание)</li>
+</ul>
+<hr>
+<h4 id="blok-4-atributy-mvz-cherez-svojstva-strong-l01-04-mvz-strong" tabindex="-1">Блок 4 — Атрибуты МВЗ (через свойства <strong>L01.04 МВЗ</strong>)</h4>
+<p><code>PROPERTY('L01.04 МВЗ'.'&lt;свойство&gt;', 'Item.МВЗ')</code></p>
+<p><strong>Выходные атрибуты (6):</strong></p>
+<ul>
+<li>Вид деятельности, Подразделение, Филиал, Регион, ЦФО, Направление</li>
+</ul>
+<hr>
+<h4 id="blok-5-atributy-vidov-zatrat" tabindex="-1">Блок 5 — Атрибуты видов затрат</h4>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Выходное поле</th>
+<th>Формула</th>
+<th>Источник</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Item.Вид затрат (Сводная)</strong></td>
+<td><code>PROPERTY('L01.07'.'Вид затрат (Сводная)', 'Item.Вид затрат')</code></td>
+<td>L01.07</td>
+</tr>
+<tr>
+<td><strong>Обозначение В/Затрат</strong></td>
+<td><code>PROPERTY('L01.03'.'Обозначение В/Затрат', 'Item.Вид затрат')</code></td>
+<td>L01.03</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h4 id="blok-6-kontrol-kachestva-validatory" tabindex="-1">Блок 6 — Контроль качества (валидаторы)</h4>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Логика</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Check Внутренний заказ</strong></td>
+<td><code>IF BOOLEAN('Заказ') AND NOT BOOLEAN('Item.Внутренний заказ') THEN 1 ELSE 0</code></td>
+<td>не найден заказ в L01.08</td>
+</tr>
+<tr>
+<td><strong>Check Вид затрат</strong></td>
+<td><code>IF BOOLEAN('Вид затрат') AND NOT BOOLEAN('Item.Вид затрат') THEN 1 ELSE 0</code></td>
+<td>не найден вид затрат в L01.07</td>
+</tr>
+<tr>
+<td><strong>не проставлен ответственный</strong></td>
+<td><code>IF BOOLEAN('Item.Внутренний заказ') AND NOT BOOLEAN('Item.L04.02...') THEN 1 ELSE 0</code></td>
+<td>предупреждение по ответственным</td>
+</tr>
+<tr>
+<td><strong>Check_Кол-во ошибок</strong></td>
+<td>сумма ключевых check-полей</td>
+<td>агрегатор ошибок</td>
+</tr>
+<tr>
+<td><strong>Check_Описание ошибки</strong></td>
+<td>текстовая сборка по активным check</td>
+<td>человекочитаемый лог</td>
+</tr>
+<tr>
+<td><strong>Есть ошибка</strong></td>
+<td><code>Check_Кол-во ошибок &gt; 0</code></td>
+<td>флаг записи с ошибкой</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>В текущей логике <strong>«не проставлен ответственный»</strong> — отдельный контроль (часто как предупреждение), а в <strong>Check_Кол-во ошибок</strong> обычно суммируются именно ошибки маппинга (заказ/вид затрат).</p>
+</blockquote>
+<hr>
+<h4 id="blok-7-sluzhebnye-polya" tabindex="-1">Блок 7 — Служебные поля</h4>
+<ul>
+<li><strong>Есть данные</strong> = наличие периода</li>
+<li><strong>NumCount</strong> = 1/0 для подсчёта записей</li>
+<li><strong>sNum ActImportOrders</strong> = нумерация записей по периодам (служебно для импорта/контроля)</li>
+</ul>
+<hr>
+<h2 id="4-spravochniki-i-mappingi" tabindex="-1">4) Справочники и маппинги</h2>
+<h3 id="4-1-spravochniki-lists" tabindex="-1">4.1 Справочники (Lists)</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Код</th>
+<th>Наименование</th>
+<th>Зачем нужен</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L01.08</strong></td>
+<td>Внутренние заказы</td>
+<td>маппинг Заказ → Item.Внутренний заказ + атрибуты заказа</td>
+</tr>
+<tr>
+<td><strong>L01.07</strong></td>
+<td>Виды затрат</td>
+<td>маппинг Вид затрат → Item.Вид затрат + «сводная» классификация</td>
+</tr>
+<tr>
+<td><strong>L01.04</strong></td>
+<td>МВЗ</td>
+<td>организационные атрибуты по Item.МВЗ</td>
+</tr>
+<tr>
+<td><strong>L01.09</strong></td>
+<td>Ответственные</td>
+<td>справочник ответственных (используется в связке)</td>
+</tr>
+<tr>
+<td><strong>L01.03</strong></td>
+<td>Вид затрат</td>
+<td>«Обозначение В/Затрат»</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-2-multikuby-mappinga" tabindex="-1">4.2 Мультикубы маппинга</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Код</th>
+<th>Наименование</th>
+<th>Связь</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M97.02</strong></td>
+<td>Маппинг Заказ – МВЗ</td>
+<td>Item.Внутренний заказ → Item.МВЗ</td>
+</tr>
+<tr>
+<td><strong>M11.02</strong></td>
+<td>1D Ответственные – Внутренние заказы</td>
+<td>Item.Внутренний заказ → Ответственный</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="5-potok-dannyh-etl-kratko-i-po-shagam" tabindex="-1">5) Поток данных (ETL) — кратко и по шагам</h2>
+<h3 id="5-1-shagi-obrabotki" tabindex="-1">5.1 Шаги обработки</h3>
+<ol>
+<li>
+<p><strong>Extract:</strong></p>
+<ul>
+<li>прочитать M98.01 (SQL параметры)</li>
+<li>прочитать M94.03 (периоды)</li>
+<li>выполнить <code>SELECT * FROM CF_Import_By_Orders WHERE PERIOD IN (...)</code></li>
+<li>логировать в M99.02</li>
+</ul>
+</li>
+<li>
+<p><strong>Transform (внутри M03.01):</strong></p>
+<ul>
+<li>загрузить «сырые» поля</li>
+<li>выполнить FINDBYNAME/SELECT/PROPERTY</li>
+<li>посчитать check-поля и служебные поля</li>
+</ul>
+</li>
+<li>
+<p><strong>Load / использование:</strong></p>
+<ul>
+<li>M03.01 как витрина факта + качества</li>
+<li>передача в потребителей (M01.04, M99.01, M99.06)</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-potrebiteli-dannyh-kuda-idut-rezultaty" tabindex="-1">6) Потребители данных (куда идут результаты)</h2>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Мультикуб</th>
+<th>Поле/использование</th>
+<th>Зачем</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M01.04 Ввод данных (по заказам)</strong></td>
+<td><code>Ввод без факта</code></td>
+<td>сопоставление плана и факта на базе M03.01</td>
+</tr>
+<tr>
+<td><strong>M99.01 MaxNumImport</strong></td>
+<td><code>MsxNumOM Заказ</code> (через NumCount/нумерацию)</td>
+<td>контроль загрузки/макс. номера импорта</td>
+</tr>
+<tr>
+<td><strong>M99.06 Ошибки свод</strong></td>
+<td><code>Ошибки: Импорт факт заказы</code> (Check_Кол-во/Описание)</td>
+<td>единая витрина ошибок импорта</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="7-vizualnaya-shema-dlya-dokumenta" tabindex="-1">7) Визуальная схема (для документа)</h2>
+<h3 id="7-1-high-level-kak-koridor-dannyh" tabindex="-1">7.1 High-level (как “коридор” данных)</h3>
+<pre class="mermaid">flowchart LR
+  SQL[(MS SQL<br/>CF_Import_By_Orders)] -->|Extract/Load| JS[JavaScript скрипт<br/>Импорт факт заказов]
+  M9403[M94.03<br/>Фильтр периодов] -->|PERIOD IN (...)| JS
+  M9801[M98.01<br/>Настройки SQL] --> JS
+  JS --> M0301[M03.01<br/>Импорт факт заказов]
+
+  JS --> LOG[M99.02<br/>Script logging]
+
+  M0301 --> M0104[M01.04<br/>Ввод данных<br/>(Ввод без факта)]
+  M0301 --> M9901[M99.01<br/>MaxNumImport]
+  M0301 --> M9906[M99.06<br/>Ошибки свод]</pre><h3 id="7-2-obogashhenie-vnutri-m03-01-mapping-svojstva-kontrol" tabindex="-1">7.2 Обогащение внутри M03.01 (маппинг → свойства → контроль)</h3>
+<pre class="mermaid">flowchart TB
+  raw[Сырые поля из SQL<br/>(Период, Заказ, Вид затрат...)] --> o[Item.Внутренний заказ<br/>FINDBYNAME L01.08]
+  raw --> c[Item.Вид затрат<br/>FINDBYNAME L01.07]
+
+  o --> mvz[Item.МВЗ<br/>SELECT M97.02]
+  o --> resp[Item.Ответственный<br/>SELECT M11.02]
+
+  o --> ordAttr[Атрибуты заказа<br/>PROPERTY L01.08]
+  mvz --> mvzAttr[Атрибуты МВЗ<br/>PROPERTY L01.04]
+  c --> costAttr[Атрибуты ВЗ<br/>PROPERTY L01.07/L01.03]
+
+  o --> chk1[Check Внутренний заказ]
+  c --> chk2[Check Вид затрат]
+  resp --> warn[не проставлен ответственный]
+
+  chk1 --> agg[Check_Кол-во ошибок / Описание]
+  chk2 --> agg
+  agg --> flag[Есть ошибка]</pre><hr>
+<h2 id="8-kriticheskie-zavisimosti-korotko" tabindex="-1">8) Критические зависимости (коротко)</h2>
+<ul>
+<li><strong>Item.Внутренний заказ</strong> — критическая точка: от него зависят атрибуты заказа, получение МВЗ, ответственных и косвенно орг-атрибуты.</li>
+<li><strong>Item.Вид затрат</strong> — важная точка для аналитики и агрегирования.</li>
+<li><strong>Подключение к SQL</strong> — критично для всего процесса; диагностика через <strong>M99.02</strong>.</li>
+</ul>
+<hr>
+<h2 id="9-mini-nabor-kpi-dlya-kontrolya-kachestva" tabindex="-1">9) Мини-набор KPI (для контроля качества)</h2>
+<ul>
+<li><strong>Успешность маппинга заказов</strong> = доля записей с <code>Check Внутренний заказ = 0</code></li>
+<li><strong>Успешность маппинга видов затрат</strong> = доля записей с <code>Check Вид затрат = 0</code></li>
+<li><strong>Общее качество импорта</strong> = доля записей с <code>Check_Кол-во ошибок = 0</code></li>
+<li><strong>Полнота ответственных</strong> = доля записей без <code>не проставлен ответственный</code></li>
+</ul>
+<hr>
+<p>Если скажете, <strong>в каком формате нужен “документ”</strong> (Confluence/Markdown/Word/Google Docs) и нужно ли включать <strong>полный перечень полей Блока 1 (21 поле)</strong> “как есть”, я адаптирую под шаблон вашей документации и сделаю финальную версию с оглавлением и якорями.</p>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>
