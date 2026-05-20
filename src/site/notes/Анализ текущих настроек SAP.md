@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/Анализ текущих настроек SAP/","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/Анализ текущих настроек SAP/","tags":["gardenEntry"],"dg-note-properties":{}}
 ---
 
 ## Как проанализировать текущие настройки SAP R/3 (Production & Production‑Controlling) без документации
